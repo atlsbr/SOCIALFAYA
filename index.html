@@ -238,6 +238,35 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .toast.error{border-color:rgba(239,68,68,0.3);color:#fca5a5}
 @keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 
+/* SETTINGS */
+.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:20px;position:relative;overflow:hidden}
+.settings-section::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0.5}
+.settings-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px}
+.settings-desc{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6}
+.settings-field{margin-bottom:20px}
+.settings-field label{display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.settings-input-row{display:flex;gap:10px;align-items:center}
+.settings-input{flex:1;padding:13px 16px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;outline:none;transition:all 0.2s}
+.settings-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.settings-input.configured{border-color:var(--success);background:rgba(16,185,129,0.04)}
+.btn-save-setting{padding:13px 22px;background:var(--accent);border:none;border-radius:10px;color:#030508;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.btn-save-setting:hover{background:#00ddb0;transform:translateY(-1px)}
+.btn-test{padding:13px 22px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:10px;color:#a78bfa;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.btn-test:hover{background:rgba(124,58,237,0.25)}
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;font-family:'Space Mono',monospace;margin-top:10px}
+.status-badge.ok{background:rgba(16,185,129,0.12);color:#6ee7b7;border:1px solid rgba(16,185,129,0.25)}
+.status-badge.warn{background:rgba(245,158,11,0.12);color:#fcd34d;border:1px solid rgba(245,158,11,0.25)}
+.status-badge.err{background:rgba(239,68,68,0.12);color:#fca5a5;border:1px solid rgba(239,68,68,0.25)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
+.howto-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:16px}
+.howto-step{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:18px}
+.step-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.step-text{font-size:13px;color:var(--text2);line-height:1.6}
+.step-text a{color:var(--accent);text-decoration:none}
+.step-text a:hover{text-decoration:underline}
+.step-text code{font-family:'Space Mono',monospace;font-size:11px;background:rgba(0,245,196,0.08);padding:2px 6px;border-radius:4px;color:var(--accent)}
+
 /* MOBILE */
 @media(max-width:600px){
   .topbar{padding:0 16px}
@@ -247,6 +276,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
   .stats-row{grid-template-columns:1fr 1fr}
   .analyzer-card{padding:20px}
   .report-grid{grid-template-columns:1fr}
+  .settings-input-row{flex-direction:column}
+  .btn-save-setting,.btn-test{width:100%}
 }
 </style>
 </head>
@@ -321,6 +352,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
       <button class="nav-btn" onclick="showPage('analyzer')">Analisador</button>
       <button class="nav-btn" onclick="showPage('growth')">Crescimento</button>
       <button class="nav-btn" onclick="showPage('history')">Histórico</button>
+      <button class="nav-btn" onclick="showPage('settings')" id="nav-settings-btn">⚙️ Config</button>
     </nav>
     <div class="topbar-user">
       <div class="user-avatar" id="user-avatar">?</div>
@@ -552,6 +584,168 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
       </div>
     </div>
   </div>
+
+  <!-- SETTINGS PAGE -->
+  <div class="page" id="page-settings">
+    <div class="section" style="padding-top:32px">
+      <div class="section-header">
+        <span class="section-tag">Configurações</span>
+        <span class="section-title">Configurações do SocialFaya</span>
+      </div>
+
+      <!-- WORKER URL CARD -->
+      <div class="settings-section">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+          <div style="font-size:28px">🔌</div>
+          <div class="settings-title">URL do Proxy (Cloudflare Worker)</div>
+        </div>
+        <div class="settings-desc">
+          Para que a IA funcione, você precisa de um Cloudflare Worker como intermediário entre o app e a API da Anthropic.
+          Cole aqui a URL do seu Worker — ela fica salva no navegador e não precisa editar código.
+        </div>
+
+        <div class="settings-field">
+          <label>URL do Cloudflare Worker</label>
+          <div class="settings-input-row">
+            <input
+              class="settings-input"
+              id="worker-url-input"
+              type="url"
+              placeholder="https://socialfaya-proxy.SEU-USUARIO.workers.dev"
+              oninput="checkWorkerInput()"
+            >
+            <button class="btn-test" onclick="testWorker()">🧪 Testar</button>
+            <button class="btn-save-setting" onclick="saveWorkerUrl()">💾 Salvar</button>
+          </div>
+          <div id="worker-status"></div>
+        </div>
+
+        <!-- HOW TO -->
+        <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:4px">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">📋 Como configurar o Worker (5 minutos)</div>
+          <div class="howto-steps">
+            <div class="howto-step">
+              <div class="step-num">Passo 1 — Conta</div>
+              <div class="step-text">Crie uma conta gratuita em <a href="https://cloudflare.com" target="_blank">cloudflare.com</a> e acesse o painel.</div>
+            </div>
+            <div class="howto-step">
+              <div class="step-num">Passo 2 — Worker</div>
+              <div class="step-text">Vá em <strong>Workers & Pages → Create → Hello World</strong>. Dê o nome <code>socialfaya-proxy</code>.</div>
+            </div>
+            <div class="howto-step">
+              <div class="step-num">Passo 3 — Código</div>
+              <div class="step-text">Clique em <strong>Edit Code</strong> e cole o código do Worker (veja abaixo). Depois clique em <strong>Deploy</strong>.</div>
+            </div>
+            <div class="howto-step">
+              <div class="step-num">Passo 4 — Chave API</div>
+              <div class="step-text">No Worker, vá em <strong>Settings → Variables</strong> e adicione: <code>ANTHROPIC_KEY</code> = sua chave <code>sk-ant-...</code> de <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.</div>
+            </div>
+            <div class="howto-step">
+              <div class="step-num">Passo 5 — URL</div>
+              <div class="step-text">Copie a URL do Worker (ex: <code>https://socialfaya-proxy.xxx.workers.dev</code>) e cole no campo acima.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CODE BLOCK -->
+        <div style="margin-top:20px">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">📄 Código do Worker (copie e cole no Cloudflare)</div>
+          <div style="position:relative">
+            <pre id="worker-code" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:20px;font-family:'Space Mono',monospace;font-size:12px;color:var(--text2);overflow-x:auto;line-height:1.7">export default {
+  async fetch(request, env) {
+
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      });
+    }
+
+    if (request.method !== 'POST') {
+      return new Response('Method not allowed', { status: 405 });
+    }
+
+    const body = await request.json();
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': env.ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await response.json();
+
+    return new Response(JSON.stringify(data), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
+  }
+};</pre>
+            <button onclick="copyWorkerCode()" style="position:absolute;top:12px;right:12px;padding:6px 14px;background:rgba(0,245,196,0.1);border:1px solid rgba(0,245,196,0.2);border-radius:8px;color:var(--accent);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;transition:all 0.2s" id="copy-code-btn">📋 Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- API KEY CARD (optional direct) -->
+      <div class="settings-section">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+          <div style="font-size:28px">🔑</div>
+          <div class="settings-title">Chave API Anthropic (opcional)</div>
+        </div>
+        <div class="settings-desc">
+          Se preferir usar a chave diretamente <strong style="color:#fcd34d">sem proxy</strong>, cole aqui. Atenção: isso expõe sua chave no navegador. Recomendado apenas para uso local/pessoal.
+        </div>
+        <div class="settings-field">
+          <label>Chave API (sk-ant-...)</label>
+          <div class="settings-input-row">
+            <input class="settings-input" id="api-key-input" type="password" placeholder="sk-ant-api03-..." oninput="checkApiKeyInput()">
+            <button class="btn-save-setting" onclick="saveApiKey()">💾 Salvar</button>
+          </div>
+          <div id="apikey-status"></div>
+        </div>
+      </div>
+
+      <!-- ABOUT CARD -->
+      <div class="settings-section">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div style="font-size:28px">📡</div>
+          <div>
+            <div class="settings-title">SocialFaya</div>
+            <div style="font-size:12px;color:var(--text2)">Inteligência Social Premium</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--accent)">v1.0</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:4px">Versão</div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--accent)">7</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:4px">Redes Suportadas</div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--accent)">Claude</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:4px">Motor de IA</div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--accent)">Firebase</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:4px">Banco de dados</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 
 <div class="toast-container" id="toast-container"></div>
@@ -737,6 +931,7 @@ function showApp(user) {
   }
   loadHistory();
   updateSim();
+  checkConfigOnLoad();
 }
 
 // ─── PAGE NAV ─────────────────────────────────────────
@@ -745,8 +940,9 @@ window.showPage = function(id) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
   const btns = document.querySelectorAll('.nav-btn');
-  const pageMap = ['dashboard','analyzer','growth','history'];
+  const pageMap = ['dashboard','analyzer','growth','history','settings'];
   btns[pageMap.indexOf(id)]?.classList.add('active');
+  if (id === 'settings') loadSettingsPage();
 };
 
 // ─── NETWORK SELECTION ────────────────────────────────
@@ -902,9 +1098,36 @@ Gere um relatório estratégico COMPLETO em formato JSON com EXATAMENTE esta est
 
 IMPORTANTE: Seja específico, detalhado e realmente útil. Considere o nicho, a rede social e o objetivo para personalizar completamente a análise. Responda APENAS com o JSON, sem texto adicional.`;
 
-    const response = await fetch("https://socialfaya-proxy.socialfaya.workers.dev", {
+    // Get endpoint & headers from saved config
+    const workerUrl = localStorage.getItem('sf_worker_url');
+    const apiKey = localStorage.getItem('sf_api_key');
+
+    let fetchUrl, fetchHeaders;
+    if (workerUrl) {
+      fetchUrl = workerUrl;
+      fetchHeaders = { 'Content-Type': 'application/json' };
+    } else if (apiKey) {
+      fetchUrl = 'https://api.anthropic.com/v1/messages';
+      fetchHeaders = {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      };
+    } else {
+      clearInterval(statusInterval);
+      loadBar.classList.remove('show');
+      loadStatus.textContent = '⚠️ Configure a URL do Worker em ⚙️ Config';
+      loadStatus.classList.add('show');
+      setTimeout(() => loadStatus.classList.remove('show'), 4000);
+      btn.disabled = false;
+      showToast('Configure o Worker em ⚙️ Configurações primeiro!', 'error');
+      showPage('settings');
+      return;
+    }
+
+    const response = await fetch(fetchUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: fetchHeaders,
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 1000,
@@ -1220,6 +1443,129 @@ window.updateSim = function() {
 
 // Initial sim call
 setTimeout(updateSim, 100);
+
+// ─── SETTINGS ─────────────────────────────────────────
+function loadSettingsPage() {
+  const workerUrl = localStorage.getItem('sf_worker_url') || '';
+  const apiKey = localStorage.getItem('sf_api_key') || '';
+  const input = document.getElementById('worker-url-input');
+  const apiInput = document.getElementById('api-key-input');
+  if (input) {
+    input.value = workerUrl;
+    if (workerUrl) input.classList.add('configured');
+    updateWorkerStatus(workerUrl ? 'saved' : 'empty');
+  }
+  if (apiInput && apiKey) {
+    apiInput.value = apiKey;
+    apiInput.classList.add('configured');
+    updateApiKeyStatus('saved');
+  }
+}
+
+function updateWorkerStatus(state) {
+  const el = document.getElementById('worker-status');
+  if (!el) return;
+  const states = {
+    empty: `<div class="status-badge warn"><span class="status-dot"></span>Não configurado — análises não funcionarão</div>`,
+    saved: `<div class="status-badge ok"><span class="status-dot"></span>URL salva — pronto para analisar!</div>`,
+    testing: `<div class="status-badge warn"><span class="status-dot"></span>Testando conexão...</div>`,
+    ok: `<div class="status-badge ok"><span class="status-dot"></span>Conexão OK — Worker funcionando!</div>`,
+    err: `<div class="status-badge err"><span class="status-dot"></span>Erro de conexão — verifique a URL e a chave API</div>`
+  };
+  el.innerHTML = states[state] || '';
+}
+
+function updateApiKeyStatus(state) {
+  const el = document.getElementById('apikey-status');
+  if (!el) return;
+  if (state === 'saved') el.innerHTML = `<div class="status-badge ok"><span class="status-dot"></span>Chave salva — modo direto (sem proxy)</div>`;
+}
+
+window.checkWorkerInput = function() {
+  const val = document.getElementById('worker-url-input').value.trim();
+  document.getElementById('worker-url-input').classList.toggle('configured', val.length > 10);
+};
+
+window.checkApiKeyInput = function() {
+  const val = document.getElementById('api-key-input').value.trim();
+  document.getElementById('api-key-input').classList.toggle('configured', val.startsWith('sk-'));
+};
+
+window.saveWorkerUrl = function() {
+  const val = document.getElementById('worker-url-input').value.trim();
+  if (!val) { showToast('Cole a URL do Worker primeiro', 'error'); return; }
+  if (!val.startsWith('http')) { showToast('URL inválida — deve começar com https://', 'error'); return; }
+  localStorage.setItem('sf_worker_url', val);
+  localStorage.removeItem('sf_api_key'); // prefer worker over direct key
+  document.getElementById('worker-url-input').classList.add('configured');
+  updateWorkerStatus('saved');
+  showToast('URL do Worker salva com sucesso! ✅');
+};
+
+window.saveApiKey = function() {
+  const val = document.getElementById('api-key-input').value.trim();
+  if (!val.startsWith('sk-')) { showToast('Chave inválida — deve começar com sk-ant-', 'error'); return; }
+  localStorage.setItem('sf_api_key', val);
+  document.getElementById('api-key-input').classList.add('configured');
+  updateApiKeyStatus('saved');
+  showToast('Chave API salva! ⚠️ Só recomendado para uso local.', 'success');
+};
+
+window.testWorker = async function() {
+  const url = document.getElementById('worker-url-input').value.trim();
+  if (!url) { showToast('Cole a URL antes de testar', 'error'); return; }
+  updateWorkerStatus('testing');
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 20,
+        messages: [{ role: 'user', content: 'Responda apenas: OK' }]
+      })
+    });
+    const data = await res.json();
+    if (data.content || data.id) {
+      updateWorkerStatus('ok');
+      showToast('Worker funcionando perfeitamente! 🚀');
+    } else {
+      updateWorkerStatus('err');
+      showToast('Worker respondeu mas com erro. Verifique a ANTHROPIC_KEY.', 'error');
+    }
+  } catch(e) {
+    updateWorkerStatus('err');
+    showToast('Não conseguiu conectar. Verifique a URL.', 'error');
+  }
+};
+
+window.copyWorkerCode = function() {
+  const code = document.getElementById('worker-code').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    document.getElementById('copy-code-btn').textContent = '✅ Copiado!';
+    setTimeout(() => { document.getElementById('copy-code-btn').textContent = '📋 Copiar'; }, 2000);
+  });
+};
+
+// Show alert on dashboard if not configured
+function checkConfigOnLoad() {
+  const worker = localStorage.getItem('sf_worker_url');
+  const key = localStorage.getItem('sf_api_key');
+  if (!worker && !key) {
+    // Add a banner on the analyzer page
+    setTimeout(() => {
+      const analyzerPage = document.getElementById('page-analyzer');
+      if (analyzerPage && !document.getElementById('config-banner')) {
+        const banner = document.createElement('div');
+        banner.id = 'config-banner';
+        banner.style.cssText = 'margin:16px 28px 0;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;font-size:13px;color:#fcd34d;cursor:pointer';
+        banner.innerHTML = '⚙️ <strong>Configure a IA primeiro!</strong> &nbsp;Clique aqui para configurar o Worker e liberar as análises →';
+        banner.onclick = () => showPage('settings');
+        analyzerPage.prepend(banner);
+      }
+    }, 500);
+  }
+}
 </script>
 </body>
   </html>
