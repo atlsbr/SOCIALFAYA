@@ -902,7 +902,7 @@ Gere um relatório estratégico COMPLETO em formato JSON com EXATAMENTE esta est
 
 IMPORTANTE: Seja específico, detalhado e realmente útil. Considere o nicho, a rede social e o objetivo para personalizar completamente a análise. Responda APENAS com o JSON, sem texto adicional.`;
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch("https://socialfaya-proxy.socialfaya.workers.dev", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -1222,4 +1222,4 @@ window.updateSim = function() {
 setTimeout(updateSim, 100);
 </script>
 </body>
-            </html>
+  </html>
